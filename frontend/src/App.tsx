@@ -32,9 +32,27 @@ export default function App() {
     const response = await api.post("/customer", {
       name: nameRef.current?.value,
       email: emailRef.current?.value,
-    }) 
+    });
 
-    console.log(response.data)
+    setCustomers((allCustomers) => [...allCustomers, response.data]);
+
+    nameRef.current.value = "";
+    emailRef.current.value = "";
+  }
+
+  async function handleDelete(id: string) {
+    try {
+      await api.delete("/customer", {
+        params: {
+          id: id,
+        },
+      });
+
+      const allCustomers = customers.filter((customer) => customer.id !== id);
+      setCustomers(allCustomers);
+    } catch (err) {
+      console.log(err);
+    }
   }
 
   return (
@@ -83,7 +101,10 @@ export default function App() {
                 {customers.status ? "ATIVO" : "INATIVO"}
               </p>
 
-              <button className="bg-red-500 w-7 h-7 rounded-lg flex items-center justify-center absolute right-0 -top-2">
+              <button
+                className="bg-red-500 w-7 h-7 rounded-lg flex items-center justify-center absolute right-0 -top-2"
+                onClick={() => handleDelete(customers.id)}
+              >
                 <FiTrash size={18} color="#FFF" />
               </button>
             </article>
