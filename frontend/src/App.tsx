@@ -1,6 +1,6 @@
 import { FiTrash } from "react-icons/fi";
 import { api } from "./services/api";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 
 interface CustomerProps {
   id: string;
@@ -17,22 +17,38 @@ export default function App() {
   }
 
   const [customers, setCustomers] = useState<CustomerProps[]>([]);
+  const nameRef = useRef<HTMLInputElement | null>(null);
+  const emailRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     loadCustomers();
   }, []);
+
+  async function handleSubmit(event: FormEvent) {
+    event.preventDefault();
+
+    if (!nameRef.current?.value || !emailRef.current?.value) return;
+
+    const response = await api.post("/customer", {
+      name: nameRef.current?.value,
+      email: emailRef.current?.value,
+    }) 
+
+    console.log(response.data)
+  }
 
   return (
     <div className="w-full min-h-screen bg-gray-900 flex justify-center px-4">
       <main className="my-10 w-full md:max-w-2xl">
         <h1 className="text-4xl font-medium text-white">Clientes</h1>
 
-        <form className="flex flex-col my-6">
+        <form className="flex flex-col my-6" onSubmit={handleSubmit}>
           <label className="font-medium text-white">Nome:</label>
           <input
             type="text"
             placeholder="Digite seu nome completo..."
             className="w-full mb-5 p-2 rounded bg-white"
+            ref={nameRef}
           />
 
           <label className="font-medium text-white">Email:</label>
@@ -40,6 +56,7 @@ export default function App() {
             type="email"
             placeholder="Digite seu email..."
             className="w-full mb-5 p-2 rounded bg-white"
+            ref={emailRef}
           />
 
           <input
