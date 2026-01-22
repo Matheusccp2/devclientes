@@ -7,14 +7,20 @@ dotenv.config();
 const app = Fastify({ logger: true });
 
 app.setErrorHandler((error, request, reply) => {
-  reply.code(400).send({ message: error.message });
+  try {
+  } catch (error) {
+    const err = error as Error;
+    reply.code(400).send({ message: err.message });
+  }
 });
 
 const start = async () => {
   await app.register(cors, {
-    origin: true, // Em desenvolvimento, aceita qualquer origem
-    methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
+    origin: [
+      "http://localhost:5173",
+      "https://devclientes-matheusccp2.vercel.app/",
+      "https://*.vercel.app",
+    ],
     credentials: true,
   });
   await app.register(routes);
