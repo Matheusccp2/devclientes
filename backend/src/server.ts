@@ -1,6 +1,8 @@
 import Fastify from "fastify";
 import cors from "@fastify/cors";
 import { routes } from "./routes.js";
+import dotenv from "dotenv";
+dotenv.config();
 
 const app = Fastify({ logger: true });
 
@@ -13,7 +15,9 @@ const start = async () => {
   await app.register(routes);
 
   try {
-    await app.listen({ port: 3333 });
+    await app.listen({
+      port: Number(process.env.PORT) || 3333,
+    });
   } catch (err) {
     process.exit(1);
   }
